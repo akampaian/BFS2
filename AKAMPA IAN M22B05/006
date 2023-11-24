@@ -1,0 +1,45 @@
+from collections import defaultdict, deque
+
+
+graph = {
+    'User1': ['User2', 'User3', 'User4'],
+    'User2': ['User1', 'User5'],
+    'User3': ['User1', 'User6'],
+    'User4': ['User1'],
+    'User5': ['User2'],
+    'User6': ['User3']
+}
+
+def bfs(graph, start):
+    visited = set()
+    queue = deque([(start, 0)]) 
+    mutual_friends = defaultdict(list)
+
+    while queue:
+        current_user, distance = queue.popleft()
+
+        
+        if distance == 2:
+            mutual_friends[start].append(current_user)
+            continue
+
+        if current_user not in visited:
+            visited.add(current_user)
+
+            for friend in graph[current_user]:
+                queue.append((friend, distance + 1))
+
+    return mutual_friends
+
+def find_mutual_friends(graph, user1, user2):
+    mutual_friends_user1 = bfs(graph, user1)
+    mutual_friends_user2 = bfs(graph, user2)
+
+    mutual_friends = set(mutual_friends_user1[user1]) & set(mutual_friends_user2[user2])
+    return mutual_friends
+
+# Example usage:
+user1 = 'User1'
+user2 = 'User3'
+result = find_mutual_friends(graph, user1, user2)
+print(f"Mutual friends between {user1} and {user2}: {result}")
